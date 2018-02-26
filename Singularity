@@ -209,6 +209,7 @@ wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.0/freesurfer-Linux
 tar xz -f freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
 cd /usr/lib/x86_64-linux-gnu
 ln -s libtiff.so.4 libtiff.so.3
+rm freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
 
 export ANTSPATH=/opt/ANTScode/bin/bin
 mkdir /opt/ANTScode 
@@ -240,6 +241,7 @@ export FSLDIR=/opt/fsl
 export PATH=${FSLDIR}/bin:${PATH}
 wget https://www.dropbox.com/s/fappgvj52xpfyzj/fsl-5.0.10-sources.tar.gz
 tar xz -f fsl-5.0.10-sources.tar.gz
+rm fsl-5.0.10-sources.tar.g
 chmod -R 777 fsl
 sed -i 's/#FSLCONFDIR/FSLCONFDIR/g' ${FSLDIR}/etc/fslconf/fsl.sh
 sed -i 's/#FSLMACHTYPE/FSLMACHTYPE/g' ${FSLDIR}/etc/fslconf/fsl.sh
