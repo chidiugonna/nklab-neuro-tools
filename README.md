@@ -1,7 +1,7 @@
 #  Singularity image containing Neuroimaging software
 This Singularity image will be about 20GB when built using Singularity 2.4.2. It comes with FSL 5.10 including eddy_cuda8.0, Mrtrix 3RC2, Freesurfer 6.0.0, Afni 18.0.21, ANTS 2.2.0, MRIQC v0.1, Julia v0.6.1 and The Duke Resting State fMRI pipeline. It also has CUDA 8.0 toolkit libraries installed.
 
-The image can be built using Singularity build in singularity2.4.2 or alternatively if you can be pulled from the Singularity Hub using the command `singularity pull shub://chidiugonna/nklab-neuro-tools`
+The image can be built using Singularity build in singularity2.4.2
 
 ---
 

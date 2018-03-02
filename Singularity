@@ -241,7 +241,7 @@ export FSLDIR=/opt/fsl
 export PATH=${FSLDIR}/bin:${PATH}
 wget https://www.dropbox.com/s/fappgvj52xpfyzj/fsl-5.0.10-sources.tar.gz
 tar xz -f fsl-5.0.10-sources.tar.gz
-rm fsl-5.0.10-sources.tar.g
+rm fsl-5.0.10-sources.tar.gz
 chmod -R 777 fsl
 sed -i 's/#FSLCONFDIR/FSLCONFDIR/g' ${FSLDIR}/etc/fslconf/fsl.sh
 sed -i 's/#FSLMACHTYPE/FSLMACHTYPE/g' ${FSLDIR}/etc/fslconf/fsl.sh
@@ -249,7 +249,7 @@ sed -i 's/#export FSLCONFDIR/export FSLCONFDIR /g' ${FSLDIR}/etc/fslconf/fsl.sh
 . ${FSLDIR}/etc/fslconf/fsl.sh
 cp -r ${FSLDIR}/config/linux_64-gcc4.8 ${FSLDIR}/config/${FSLMACHTYPE}
 sed -i "s#scl enable devtoolset-2 -- c++#c++#g" $FSLDIR/config/$FSLMACHTYPE/systemvars.mk
-sed -i "s#CUDA_INSTALLATION = /opt/cuda-7.5#CUDA_INSTALLATION = /usr/local/cuda-7.5#g" $FSLDIR/config/$FSLMACHTYPE/systemvars.mk
+sed -i "s#CUDA_INSTALLATION = /opt/cuda-7.5#CUDA_INSTALLATION = /usr/local/cuda-8.0#g" $FSLDIR/config/$FSLMACHTYPE/systemvars.mk
 sed -i "s#VTKDIR_INC = /home/fs0/cowboy/var/caper_linux_64-gcc4.4/VTK7/include/vtk-7.0#VTKDIR_INC = /usr/local/include/vtk-7.1/#g" $FSLDIR/config/$FSLMACHTYPE/externallibs.mk
 sed -i "s#VTKDIR_LIB = /home/fs0/cowboy/var/caper_linux_64-gcc4.4/VTK7/lib#VTKDIR_LIB = /usr/local/lib/#g" $FSLDIR/config/$FSLMACHTYPE/externallibs.mk
 sed -i "s#VTKSUFFIX = -7.0#VTKSUFFIX = -7.1#g" $FSLDIR/config/$FSLMACHTYPE/externallibs.mk
