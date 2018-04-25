@@ -36,6 +36,8 @@ export FSFAST_HOME=/opt/freesurfer/fsfast
 export SUBJECTS_DIR=/opt/freesurfer/subjects
 export MINC_BIN_DIR=/opt/freesurfer/mni/bin
 export MINC_LIB_DIR=/opt/freesurfer/mni/lib
+export MNI_PERL5LIB=$FREESURFER_HOME/mni/share/perl5
+export PERL5LIB=$FREESURFER_HOME/mni/share/perl5
 export FSL_DIR=/opt/fsl
 export MNI_DIR=/opt/freesurfer/mni
 export MNI_DATAPATH=/opt/freesurfer/mni/data
@@ -64,7 +66,7 @@ exec "$@"
 %test
 
 %post
-mkdir /uaopt /extra /xdisk /opt/data /opt/bin
+mkdir /uaopt /extra /xdisk /rsgrps /opt/data /opt/bin /work /data /output /input
 export BXHVER=bxh_xcede_tools-1.11.1-lsb30.x86_64
 export BXHLOC=7384
 export BXHBIN=/opt/$BXHVER
@@ -209,7 +211,7 @@ wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.0/freesurfer-Linux
 tar xz -f freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
 cd /usr/lib/x86_64-linux-gnu
 ln -s libtiff.so.4 libtiff.so.3
-rm freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
+rm /opt/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
 
 export ANTSPATH=/opt/ANTScode/bin/bin
 mkdir /opt/ANTScode 
@@ -241,7 +243,7 @@ export FSLDIR=/opt/fsl
 export PATH=${FSLDIR}/bin:${PATH}
 wget https://www.dropbox.com/s/fappgvj52xpfyzj/fsl-5.0.10-sources.tar.gz
 tar xz -f fsl-5.0.10-sources.tar.gz
-rm fsl-5.0.10-sources.tar.gz
+rm /opt/fsl-5.0.10-sources.tar.gz
 chmod -R 777 fsl
 sed -i 's/#FSLCONFDIR/FSLCONFDIR/g' ${FSLDIR}/etc/fslconf/fsl.sh
 sed -i 's/#FSLMACHTYPE/FSLMACHTYPE/g' ${FSLDIR}/etc/fslconf/fsl.sh
@@ -286,7 +288,11 @@ tar -xzf rsfmri_python.tgz  -C /opt
 rm rsfmri_python.tgz
 rm $BXHVER.tgz
 
-chmod -R 777 /opt 
+chmod -R 777 /opt
+chmod -R 777 /work
+chmod -R 777 /data
+chmod -R 777 /output
+chmod -R 777 /input
 
 mv /resting_pipeline.py $RSFMRI/bin
 mv /resting_pipeline_orig.py $RSFMRI/bin
