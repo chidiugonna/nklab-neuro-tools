@@ -2,11 +2,10 @@ Bootstrap: docker
 From: ubuntu:xenial
 
 %help
-Please refer to https://github.com/chidiugonna/nklab-neuro-tools for documentation about this singularity container.
+exec /opt/bin/startup.sh "-h"
 
 %setup
 cp ./src/resting_pipeline.py $SINGULARITY_ROOTFS
-cp ./src/resting_pipeline_orig.py $SINGULARITY_ROOTFS
 cp ./src/fsl_sub $SINGULARITY_ROOTFS
 cp ./src/statusfeat.py $SINGULARITY_ROOTFS
 cp ./src/runfeat-1.py $SINGULARITY_ROOTFS
@@ -14,6 +13,9 @@ cp ./src/make_fsl_stc.py $SINGULARITY_ROOTFS
 cp ./src/changePython2.sh $SINGULARITY_ROOTFS
 cp ./src/changePython3.sh $SINGULARITY_ROOTFS
 cp ./src/license.txt $SINGULARITY_ROOTFS
+cp ./src/startup.sh $SINGULARITY_ROOTFS
+cp ./src/readme $SINGULARITY_ROOTFS
+cp ./src/version $SINGULARITY_ROOTFS
 
 %environment
 LD_LIBRARY_PATH=/usr/local/cuda/lib64:/.singularity.d/libs:/usr/lib:/opt/freesurfer/mni/lib:$LD_LIBRARY_PATH
@@ -21,6 +23,7 @@ export LD_LIBRARY_PATH
 export FSLDIR=/opt/fsl
 export PATH=$FSLDIR/bin:$PATH
 export PATH=$FSLDIR/bin/FSLeyes:$PATH
+export PATH=$FSLDIR/bin/eddypatch:$PATH
 export BXHVER=bxh_xcede_tools-1.11.1-lsb30.x86_64
 export BXHBIN=/opt/$BXHVER
 export RSFMRI=/opt/rsfmri_python
@@ -33,6 +36,7 @@ export PATH=/opt/mrtrix3/bin:$PATH
 export FREESURFER_HOME=/opt/freesurfer
 export FUNCTIONALS_DIR=/opt/freesurfer/sessions
 export FSFAST_HOME=/opt/freesurfer/fsfast
+export FS_LICENSE=$FREESURFER_HOME/license.txt
 export SUBJECTS_DIR=/opt/freesurfer/subjects
 export MINC_BIN_DIR=/opt/freesurfer/mni/bin
 export MINC_LIB_DIR=/opt/freesurfer/mni/lib
@@ -55,18 +59,18 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/.singularity.d/libs:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda/bin:$PATH
+export PATH=$PATH:/opt/workbench/exe_linux64
+export PATH=$PATH:/opt/workbench/wb_shortcuts
 %files
 
 %runscript
-. $FSLDIR/etc/fslconf/fsl.sh
 cd /opt/data
-exec "$@"
-
+exec /opt/bin/startup.sh "$@"
 
 %test
 
 %post
-mkdir /uaopt /extra /xdisk /rsgrps /opt/data /opt/bin /work /data /output /input
+mkdir -p /uaopt /extra /xdisk /rsgrps /opt/data /opt/bin /opt/work /opt/input /opt/output
 export BXHVER=bxh_xcede_tools-1.11.1-lsb30.x86_64
 export BXHLOC=7384
 export BXHBIN=/opt/$BXHVER
@@ -128,7 +132,6 @@ apt-get update && apt-get install -y \
         midori \
         python3-pip \
         
-pip install --upgrade pip
 pip install numpy
 pip install scipy
 pip install nibabel
@@ -138,13 +141,13 @@ pip install rdflib
 pip install nipy
 pip install dipy
 pip install jupyter
+pip install pyBIDS
 
-pip3 install --upgrade pip
 pip3 install xgboost
 pip3 install numpy
 pip3 install scipy
 pip3 install nibabel
-pip3 install networkx
+pip3 install networkx==1.11
 pip3 install nipype
 pip3 install rdflib
 pip3 install nipy
@@ -154,6 +157,7 @@ pip3 install nilearn
 pip3 install MNE
 pip3 install nilearn
 pip3 install jupyter
+pip3 install pyBIDS
 
 cd /tmp
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
@@ -178,10 +182,10 @@ export LD_LIBRARY_PATH=/.singularity.d/libs:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda/bin:$PATH
 
 cd /tmp
-wget https://cmake.org/files/v3.10/cmake-3.10.0-rc1.tar.gz
-tar xz -f cmake-3.10.0-rc1.tar.gz
-rm cmake-3.10.0-rc1.tar.gz
-cd cmake-3.10.0-rc1
+wget https://cmake.org/files/v3.12/cmake-3.12.0-rc3.tar.gz
+tar xz -f cmake-3.12.0-rc3.tar.gz
+rm cmake-3.12.0-rc3.tar.gz
+cd cmake-3.12.0-rc3
 ./configure
 make
 make install
@@ -205,14 +209,19 @@ cd /opt/mrtrix3
 ./configure
 ./build
 
-export FREESURFER_HOME=/opt/freesurfer
 cd /opt
-wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.0/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
-tar xz -f freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
+export FREESURFER_HOME=/opt/freesurfer
+wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/dev/freesurfer-linux-centos6_x86_64-dev.tar.gz
+tar xz -f freesurfer-linux-centos6_x86_64-dev.tar.gz
 cd /usr/lib/x86_64-linux-gnu
 ln -s libtiff.so.4 libtiff.so.3
-rm /opt/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
+rm /opt/freesurfer-linux-centos6_x86_64-dev.tar.gz
+cd $FREESURFER_HOME
+curl "https://surfer.nmr.mgh.harvard.edu/fswiki/MatlabRuntime?action=AttachFile&do=get&target=runtime2014bLinux.tar.gz" -o "runtime.tar.gz"
+tar xvf runtime.tar.gz
+rm $FREESURFER_HOME/runtime.tar.gz
 
+cd /opt
 export ANTSPATH=/opt/ANTScode/bin/bin
 mkdir /opt/ANTScode 
 cd /opt/ANTScode
@@ -241,9 +250,9 @@ export HOME=$HOMEBACK
 cd /opt
 export FSLDIR=/opt/fsl
 export PATH=${FSLDIR}/bin:${PATH}
-wget https://www.dropbox.com/s/fappgvj52xpfyzj/fsl-5.0.10-sources.tar.gz
-tar xz -f fsl-5.0.10-sources.tar.gz
-rm /opt/fsl-5.0.10-sources.tar.gz
+wget https://www.dropbox.com/s/chetucmygqyz992/fsl-5.0.11-sources.tar.gz
+tar xz -f fsl-5.0.11-sources.tar.gz
+rm fsl-5.0.11-sources.tar.gz
 chmod -R 777 fsl
 sed -i 's/#FSLCONFDIR/FSLCONFDIR/g' ${FSLDIR}/etc/fslconf/fsl.sh
 sed -i 's/#FSLMACHTYPE/FSLMACHTYPE/g' ${FSLDIR}/etc/fslconf/fsl.sh
@@ -261,14 +270,32 @@ cd ${FSLDIR}
 ./build
 sed -i "s#dropprivileges=1#dropprivileges=0#g" ${FSLDIR}/etc/fslconf/fslpython_install.sh
 ${FSLDIR}/etc/fslconf/fslpython_install.sh
-cd  ${FSLDIR}/bin
+mkdir -p $FSLDIR/bin/eddypatch
+cd  ${FSLDIR}/bin/eddypatch
 wget https://fsl.fmrib.ox.ac.uk/fsldownloads/patches/eddy-patch-fsl-5.0.11/centos6/eddy_cuda8.0
 chmod +x eddy_cuda8.0
 wget https://fsl.fmrib.ox.ac.uk/fsldownloads/patches/eddy-patch-fsl-5.0.11/centos6/eddy_openmp
 chmod +x eddy_openmp
+cd  ${FSLDIR}/bin
 wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fsleyes/FSLeyes-latest-ubuntu1604.zip
 unzip FSLeyes-latest-ubuntu1604.zip
 rm FSLeyes-latest-ubuntu1604.zip
+
+cd /tmp
+wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/CUDA_8.0/probtrackx2_gpu.zip
+unzip probtrackx2_gpu.zip
+rm -f probtrackx2_gpu.zip
+mv probtrackx2_gpu $FSLDIR/bin
+
+mkdir /tmp/bedpost
+cd /tmp/bedpost
+wget http://users.fmrib.ox.ac.uk/~moisesf/Bedpostx_GPU/CUDA_8.0/bedpostx_gpu.zip
+unzip bedpostx_gpu.zip
+rm -f bedpostx_gpu.zip
+cp /tmp/bedpost/bin/* $FSLDIR/bin
+cp /tmp/bedpost/lib/* $FSLDIR/lib
+rm -r /tmp/bedpost
+sed -i 's\#!/bin/sh\#!/bin/bash\g' $FSLDIR/bin/bedpostx_postproc_gpu.sh
 
 mv /changePython2.sh /opt/bin/changePython2.sh
 mv /changePython3.sh /opt/bin/changePython3.sh
@@ -289,18 +316,17 @@ rm rsfmri_python.tgz
 rm $BXHVER.tgz
 
 chmod -R 777 /opt
-chmod -R 777 /work
-chmod -R 777 /data
-chmod -R 777 /output
-chmod -R 777 /input
 
-mv /resting_pipeline.py $RSFMRI/bin
-mv /resting_pipeline_orig.py $RSFMRI/bin
+
+mv /resting_pipeline.py /opt/bin
 mv /fsl_sub $FSLDIR/bin
-mv /statusfeat.py $RSFMRI/bin
-mv /runfeat-1.py $RSFMRI/bin
-mv /make_fsl_stc.py $RSFMRI/bin
+mv /statusfeat.py /opt/bin
+mv /runfeat-1.py /opt/bin
+mv /make_fsl_stc.py /opt/bin
 mv /license.txt $FREESURFER_HOME
+mv /startup.sh /opt/bin
+mv /readme /opt/bin
+mv /version /opt/bin
 
 echo ". $FSLDIR/etc/fslconf/fsl.sh" >> $SINGULARITY_ENVIRONMENT
 
