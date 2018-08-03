@@ -61,6 +61,7 @@ export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda/bin:$PATH
 export PATH=$PATH:/opt/workbench/exe_linux64
 export PATH=$PATH:/opt/workbench/wb_shortcuts
+
 %files
 
 %runscript
